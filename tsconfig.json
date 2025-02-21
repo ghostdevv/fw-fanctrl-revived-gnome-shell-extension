@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"moduleResolution": "Bundler",
+		"target": "ESNext",
+		"module": "ESNext",
+		"strict": true,
+		"verbatimModuleSyntax": true,
+		"allowJs": true,
+		"checkJs": true,
+		"resolveJsonModule": true
+	},
+	"include": ["src/**.ts", "src/**.js"],
+	"exclude": ["node_modules/**"]
+}

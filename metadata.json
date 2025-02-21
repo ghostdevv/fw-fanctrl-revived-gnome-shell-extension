@@ -1,0 +1,6 @@
+{
+	"name": "Framework Fan Control",
+	"description": "Control your framework laptops fans",
+	"uuid": "fw-fan-ctrl@willow.sh",
+	"shell-version": ["47"]
+}
