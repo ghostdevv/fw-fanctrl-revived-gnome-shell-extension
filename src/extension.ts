@@ -70,7 +70,7 @@ const QuickSettingsMenu = GObject.registerClass(
 			this._section = new PopupMenuSection();
 
 			for (const strategy of strategies) {
-				const item = new PopupMenuItem(_(titleCase(strategy)));
+				const item = new PopupMenuItem(titleCase(strategy));
 				this._section?.addMenuItem(item);
 				this._items?.set(strategy, item);
 

@@ -4,5 +4,6 @@
 	"uuid": "fw-fanctrl-revived@willow.sh",
 	"url": "https://github.com/ghostdevv/fw-fanctrl-revived-gnome-shell-extension",
 	"shell-version": ["47"],
-	"settings-schema": "org.gnome.shell.extensions.fw-fanctrl-revived"
+	"settings-schema": "org.gnome.shell.extensions.fw-fanctrl-revived",
+	"gettext-domain": "fw-fanctrl-revived@willow.sh"
 }
