@@ -1,6 +1,6 @@
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import GObject from 'gi://GObject';
 import { exec, titleCase } from './utils';
+import GObject from 'gi://GObject';
 import GLib from 'gi://GLib';
 import {
 	PopupMenuSection,
@@ -35,9 +35,52 @@ const QuickSettingsMenu = GObject.registerClass(
 
 			this.connect('destroy', () => {
 				this._section?.destroy();
-				this._items.forEach((item) => item.destroy());
+				this._section = null;
+
+				for (const item of this._items.values()) {
+					item.destroy();
+				}
+
 				this._items.clear();
 			});
+		}
+
+		async _setup(extension: FwFanCtrl) {
+			const result = await exec([
+				'fw-fanctrl',
+				'--output-format=JSON',
+				'print',
+				'list',
+			]);
+
+			const { strategies }: { strategies: string[] } = JSON.parse(result);
+
+			this._section = new PopupMenuSection();
+
+			for (const strategy of strategies) {
+				const item = new PopupMenuItem(_(titleCase(strategy)));
+				this._section?.addMenuItem(item);
+				this._items?.set(strategy, item);
+
+				item.connect('activate', async () => {
+					await exec(['fw-fanctrl', 'use', strategy]);
+					await extension._checkStrategy();
+				});
+			}
+
+			this.menu.addMenuItem(this._section);
+		}
+
+		_setActiveStrategy(strategy: string) {
+			for (const [itemStrategy, menuItem] of this._items.entries()) {
+				menuItem.setOrnament(
+					itemStrategy === strategy ? Ornament.CHECK : Ornament.NONE,
+				);
+			}
+		}
+
+		_setFanCtrlActive(enabled: boolean) {
+			this.set_checked(enabled);
 		}
 	},
 );
@@ -89,29 +132,7 @@ export default class FwFanCtrl extends Extension {
 
 	async _sync() {
 		if (this._menu && this._menu._items.size == 0) {
-			const result = await exec([
-				'fw-fanctrl',
-				'--output-format=JSON',
-				'print',
-				'list',
-			]);
-
-			const { strategies }: { strategies: string[] } = JSON.parse(result);
-
-			this._menu._section = new PopupMenuSection();
-
-			for (const strategy of strategies) {
-				const item = new PopupMenuItem(_(titleCase(strategy)));
-				this._menu._section?.addMenuItem(item);
-				this._menu._items?.set(strategy, item);
-
-				item.connect('activate', async () => {
-					await exec(['fw-fanctrl', 'use', strategy]);
-					await this._checkStrategy();
-				});
-			}
-
-			this._menu.menu.addMenuItem(this._menu._section);
+			await this._menu._setup(this);
 		}
 
 		await this._checkActive();
@@ -119,19 +140,19 @@ export default class FwFanCtrl extends Extension {
 	}
 
 	async _checkStrategy() {
-		const result = await exec([
-			'fw-fanctrl',
-			'--output-format=JSON',
-			'print',
-			'current',
-		]);
+		try {
+			const result = await exec([
+				'fw-fanctrl',
+				'--output-format=JSON',
+				'print',
+				'current',
+			]);
 
-		const { strategy }: { strategy: string } = JSON.parse(result);
+			const { strategy }: { strategy: string } = JSON.parse(result);
 
-		for (const [itemStrategy, menuItem] of this._menu!._items.entries()) {
-			menuItem.setOrnament(
-				itemStrategy === strategy ? Ornament.CHECK : Ornament.NONE,
-			);
+			this._menu?._setActiveStrategy(strategy);
+		} catch (error) {
+			console.error('[fw-fan-ctrl-ext] Error checking strategy:', error);
 		}
 	}
 
@@ -147,7 +168,7 @@ export default class FwFanCtrl extends Extension {
 			const { active }: { active: boolean } = JSON.parse(result);
 
 			this._indicator!.visible = active;
-			this._menu?.set_checked(active);
+			this._menu?._setFanCtrlActive(active);
 		} catch (error) {
 			console.error(
 				'[fw-fan-ctrl-ext] Error checking active status:',
