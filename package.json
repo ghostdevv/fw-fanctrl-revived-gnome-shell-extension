@@ -1,5 +1,5 @@
 {
-	"name": "fw-fanctrl-gnome-shell-extension",
+	"name": "fw-fanctrl-revived-gnome-shell-extension",
 	"private": true,
 	"type": "module",
 	"main": "src/index.ts",

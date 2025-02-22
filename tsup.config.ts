@@ -41,7 +41,7 @@ export default defineConfig({
 
 		const DEST_PATH = join(
 			HOME,
-			'/.local/share/gnome-shell/extensions/fw-fan-ctrl@willow.sh',
+			'/.local/share/gnome-shell/extensions/fw-fanctrl-revived@willow.sh',
 		);
 
 		if (existsSync(DEST_PATH)) {

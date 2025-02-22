@@ -1,8 +1,8 @@
 {
 	"name": "Framework Fan Control",
 	"description": "Control your framework laptops fans",
-	"uuid": "fw-fan-ctrl@willow.sh",
-	"url": "https://github.com/ghostdevv/fw-fanctrl-gnome-shell-extension",
+	"uuid": "fw-fanctrl-revived@willow.sh",
+	"url": "https://github.com/ghostdevv/fw-fanctrl-revived-gnome-shell-extension",
 	"shell-version": ["47"],
 	"settings-schema": "org.gnome.shell.extensions.fw-fanctrl-revived"
 }

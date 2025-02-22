@@ -173,7 +173,10 @@ export default class FwFanCtrl extends Extension {
 
 			this._menu?._setActiveStrategy(strategy);
 		} catch (error) {
-			console.error('[fw-fan-ctrl-ext] Error checking strategy:', error);
+			console.error(
+				'[fw-fanctrl-revived] Error checking strategy:',
+				error,
+			);
 		}
 	}
 
@@ -192,7 +195,7 @@ export default class FwFanCtrl extends Extension {
 			this._menu?._setFanCtrlActive(active);
 		} catch (error) {
 			console.error(
-				'[fw-fan-ctrl-ext] Error checking active status:',
+				'[fw-fanctrl-revived] Error checking active status:',
 				error,
 			);
 		}
