@@ -122,7 +122,9 @@ export default class FwFanCtrl extends Extension {
 
 	disable() {
 		this._indicator?.destroy();
+		this._indicator = null;
 		this._menu?.destroy();
+		this._menu = null;
 
 		if (this._sourceId) {
 			GLib.Source.remove(this._sourceId);
