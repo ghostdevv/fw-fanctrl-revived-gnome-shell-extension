@@ -21,6 +21,7 @@ const QuickSettingsMenu = GObject.registerClass(
 	class QuickSettingsMenu extends QuickMenuToggle {
 		_section: PopupMenuSection | null = null;
 		_items = new Map<string, PopupMenuItem>();
+		_extension: FwFanCtrl | null = null;
 
 		_init() {
 			super._init({
@@ -34,9 +35,17 @@ const QuickSettingsMenu = GObject.registerClass(
 				_('Framework Fan Control'),
 			);
 
+			this.connect('clicked', async () => {
+				await exec(['fw-fanctrl', this?.checked ? 'resume' : 'pause']);
+
+				await this._extension?._checkActive();
+			});
+
 			this.connect('destroy', () => {
 				this._section?.destroy();
 				this._section = null;
+
+				this._extension = null;
 
 				for (const item of this._items.values()) {
 					item.destroy();
@@ -47,6 +56,8 @@ const QuickSettingsMenu = GObject.registerClass(
 		}
 
 		async _setup(extension: FwFanCtrl) {
+			this._extension = extension;
+
 			const result = await exec([
 				'fw-fanctrl',
 				'--output-format=JSON',
@@ -109,15 +120,6 @@ export default class FwFanCtrl extends Extension {
 		});
 
 		this._sync();
-
-		this._menu.connect('clicked', async () => {
-			await exec([
-				'fw-fanctrl',
-				this._menu?.checked ? 'resume' : 'pause',
-			]);
-
-			await this._checkActive();
-		});
 	}
 
 	disable() {
