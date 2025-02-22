@@ -1,0 +1,158 @@
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import GObject from 'gi://GObject';
+import { exec, titleCase } from './utils';
+import GLib from 'gi://GLib';
+import {
+	PopupMenuSection,
+	PopupMenuItem,
+	Ornament,
+} from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import {
+	QuickMenuToggle,
+	SystemIndicator,
+} from 'resource:///org/gnome/shell/ui/quickSettings.js';
+import {
+	Extension,
+	gettext as _,
+} from 'resource:///org/gnome/shell/extensions/extension.js';
+
+const QuickSettingsMenu = GObject.registerClass(
+	class QuickSettingsMenu extends QuickMenuToggle {
+		_section: PopupMenuSection | null = null;
+		_items = new Map<string, PopupMenuItem>();
+
+		_init() {
+			super._init({
+				title: _('Fan Control'),
+				iconName: 'weather-tornado-symbolic',
+				toggleMode: true,
+			});
+
+			this.menu.setHeader(
+				'weather-tornado-symbolic',
+				_('Framework Fan Control'),
+			);
+
+			this.connect('destroy', () => {
+				this._section?.destroy();
+				this._items.forEach((item) => item.destroy());
+				this._items.clear();
+			});
+		}
+	},
+);
+
+export default class FwFanCtrl extends Extension {
+	private _indicator: InstanceType<typeof SystemIndicator> | null = null;
+	private _menu: InstanceType<typeof QuickSettingsMenu> | null = null;
+	private _sourceId: number | null = null;
+
+	enable() {
+		this._menu = new QuickSettingsMenu();
+		this._indicator = new SystemIndicator();
+		this._indicator.quickSettingsItems.push(this._menu);
+
+		Main.panel.statusArea.quickSettings.addExternalIndicator(
+			this._indicator,
+		);
+
+		this._sourceId = GLib.timeout_add_seconds(
+			GLib.PRIORITY_DEFAULT,
+			10,
+			() => {
+				this._sync();
+				return GLib.SOURCE_CONTINUE;
+			},
+		);
+
+		this._sync();
+
+		this._menu.connect('clicked', async () => {
+			await exec([
+				'fw-fanctrl',
+				this._menu?.checked ? 'resume' : 'pause',
+			]);
+
+			await this._checkActive();
+		});
+	}
+
+	disable() {
+		this._indicator?.destroy();
+		this._menu?.destroy();
+
+		if (this._sourceId) {
+			GLib.Source.remove(this._sourceId);
+			this._sourceId = null;
+		}
+	}
+
+	async _sync() {
+		if (this._menu && this._menu._items.size == 0) {
+			const result = await exec([
+				'fw-fanctrl',
+				'--output-format=JSON',
+				'print',
+				'list',
+			]);
+
+			const { strategies }: { strategies: string[] } = JSON.parse(result);
+
+			this._menu._section = new PopupMenuSection();
+
+			for (const strategy of strategies) {
+				const item = new PopupMenuItem(_(titleCase(strategy)));
+				this._menu._section?.addMenuItem(item);
+				this._menu._items?.set(strategy, item);
+
+				item.connect('activate', async () => {
+					await exec(['fw-fanctrl', 'use', strategy]);
+					await this._checkStrategy();
+				});
+			}
+
+			this._menu.menu.addMenuItem(this._menu._section);
+		}
+
+		await this._checkActive();
+		await this._checkStrategy();
+	}
+
+	async _checkStrategy() {
+		const result = await exec([
+			'fw-fanctrl',
+			'--output-format=JSON',
+			'print',
+			'current',
+		]);
+
+		const { strategy }: { strategy: string } = JSON.parse(result);
+
+		for (const [itemStrategy, menuItem] of this._menu!._items.entries()) {
+			menuItem.setOrnament(
+				itemStrategy === strategy ? Ornament.CHECK : Ornament.NONE,
+			);
+		}
+	}
+
+	async _checkActive() {
+		try {
+			const result = await exec([
+				'fw-fanctrl',
+				'--output-format=JSON',
+				'print',
+				'active',
+			]);
+
+			const { active }: { active: boolean } = JSON.parse(result);
+
+			this._indicator!.visible = active;
+			this._menu?.set_checked(active);
+		} catch (error) {
+			console.error(
+				'[fw-fan-ctrl-ext] Error checking active status:',
+				error,
+			);
+		}
+	}
+}
