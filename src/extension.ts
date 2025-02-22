@@ -1,6 +1,7 @@
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import { exec, titleCase } from './utils';
 import GObject from 'gi://GObject';
+import type Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import {
 	PopupMenuSection,
@@ -89,8 +90,11 @@ export default class FwFanCtrl extends Extension {
 	private _indicator: InstanceType<typeof SystemIndicator> | null = null;
 	private _menu: InstanceType<typeof QuickSettingsMenu> | null = null;
 	private _sourceId: number | null = null;
+	private _settings: Gio.Settings | null = null;
 
 	enable() {
+		this._settings = this.getSettings();
+
 		this._menu = new QuickSettingsMenu();
 		this._indicator = new SystemIndicator();
 		this._indicator.quickSettingsItems.push(this._menu);
@@ -99,14 +103,10 @@ export default class FwFanCtrl extends Extension {
 			this._indicator,
 		);
 
-		this._sourceId = GLib.timeout_add_seconds(
-			GLib.PRIORITY_DEFAULT,
-			10,
-			() => {
-				this._sync();
-				return GLib.SOURCE_CONTINUE;
-			},
-		);
+		this._createLoop(this._settings.get_int('refresh-interval'));
+		this._settings.connect('changed::refresh-interval', (settings, key) => {
+			this._createLoop(settings.get_int('refresh-interval'));
+		});
 
 		this._sync();
 
@@ -123,13 +123,32 @@ export default class FwFanCtrl extends Extension {
 	disable() {
 		this._indicator?.destroy();
 		this._indicator = null;
+
 		this._menu?.destroy();
 		this._menu = null;
+
+		this._settings = null;
 
 		if (this._sourceId) {
 			GLib.Source.remove(this._sourceId);
 			this._sourceId = null;
 		}
+	}
+
+	_createLoop(interval: number) {
+		if (this._sourceId) {
+			GLib.Source.remove(this._sourceId);
+			this._sourceId = null;
+		}
+
+		this._sourceId = GLib.timeout_add_seconds(
+			GLib.PRIORITY_DEFAULT,
+			interval,
+			() => {
+				this._sync();
+				return GLib.SOURCE_CONTINUE;
+			},
+		);
 	}
 
 	async _sync() {

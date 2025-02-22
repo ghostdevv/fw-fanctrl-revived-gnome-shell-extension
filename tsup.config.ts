@@ -1,11 +1,12 @@
+import { isAbsolute, join } from 'node:path';
+import { cp, rm } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { defineConfig } from 'tsup';
-import { isAbsolute, join, resolve } from 'node:path';
-import { cp, rm } from 'node:fs/promises';
 import { env } from 'node:process';
+import { exec } from 'tinyexec';
 
 export default defineConfig({
-	entry: ['src/extension.ts'],
+	entry: ['src/extension.ts', 'src/prefs.ts'],
 	format: ['esm'],
 	dts: false,
 	minify: false,
@@ -22,6 +23,14 @@ export default defineConfig({
 			join(import.meta.dirname, './LICENSE'),
 			join(BUILD_PATH, './LICENSE'),
 		);
+
+		await cp(
+			join(import.meta.dirname, './src/schemas'),
+			join(BUILD_PATH, './schemas'),
+			{ recursive: true },
+		);
+
+		await exec('glib-compile-schemas', [join(BUILD_PATH, './schemas')]);
 
 		const HOME = env.HOME;
 

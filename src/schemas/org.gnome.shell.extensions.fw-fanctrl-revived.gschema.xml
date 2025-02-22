@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.fw-fanctrl-revived" path="/org/gnome/shell/extensions/fw-fanctrl-revived/">
+    <key name="refresh-interval" type="i">
+        <default>10</default>
+        <summary>Refresh Interval</summary>
+        <description>The duration (in seconds) between refreshes of the extensions fan control data.</description>
+    </key>
+  </schema>
+</schemalist>
