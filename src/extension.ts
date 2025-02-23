@@ -39,7 +39,6 @@ const QuickSettingsMenu = GObject.registerClass(
 
 			this.connect('clicked', async () => {
 				await exec(['fw-fanctrl', this?.checked ? 'resume' : 'pause']);
-
 				await this._extension?._checkActive();
 			});
 
