@@ -26,6 +26,9 @@ export default class FwFanCtrlPreferences extends ExtensionPreferences {
 
 		const settings = this.getSettings();
 
+		// Refresh interval settings code based on:
+		// https://github.com/joax/fw-fanctrl-gnome-shell-extension/blob/fefb0716e9743947b402be33515aed05983264f4/src/prefs.js#L29
+
 		const adjustment = new Gtk.Adjustment({
 			value: settings.get_int('refresh-interval'),
 			step_increment: 1,
