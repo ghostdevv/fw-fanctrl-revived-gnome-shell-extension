@@ -1,9 +1,6 @@
 # Framework Fan Control Gnome Extension
 
-A gnome extension that wraps
-[fw-fanctrl](https://github.com/TamtamHero/fw-fanctrl) to provide an easy way to
-set your fan profile. Inspired by
-[joax/fw-fanctrl-gnome-shell-extension](https://github.com/joax/fw-fanctrl-gnome-shell-extension).
+A Gnome extension that provides a convenient way to control your framework laptop fan profile when using [fw-fanctrl](https://github.com/TamtamHero/fw-fanctrl).
 
 ![screenshot of the extension with it's dropdown in quick settings showing the fan profile names](./.github/example.png)
 
@@ -18,7 +15,7 @@ set your fan profile. Inspired by
 
 ## Differences from joax/fw-fanctrl-gnome-shell-extension
 
-This extension is spiritual successor to
+This extension is spiritual successor to, and inspired by,
 [joax/fw-fanctrl-gnome-shell-extension](https://github.com/joax/fw-fanctrl-gnome-shell-extension)
 as the author was unfortunately unavailable. The differences we currently have
 is supporting Gnome 47+, and the control is in quick settings rather than the
