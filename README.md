@@ -1,6 +1,9 @@
 # Framework Fan Control Gnome Extension
 
+<div height="100px">
+<!-- Badge by Andy Holmes https://github.com/andyholmes/gnome-shell-extensions-badge -->
 [![get it on gnome extension store](./.github/gnome-extensions.svg)](https://extensions.gnome.org/extension/7864/framework-fan-control/)
+</div>
 
 A gnome extension that wraps
 [fw-fanctrl](https://github.com/TamtamHero/fw-fanctrl) to provide an easy way to
