@@ -1,0 +1,16 @@
+/* Based on GPL 3 Licensed Code from https://github.com/maniacx/Battery-Health-Charging/blob/522f698c9f70027da017bccbedbc15d0b61a2a25/stylesheet.css */
+
+.fw-fctrl-preferences-button {
+	border-radius: 48px;
+	padding: 8px;
+	background-color: rgba(128, 128, 128, 0.1);
+}
+.fw-fctrl-preferences-button:hover {
+	background-color: rgba(128, 128, 128, 0.3);
+}
+.fw-fctrl-popup-menu {
+	background-color: rgba(128, 128, 128, 0);
+}
+.fw-fctrl-popup-menu:hover {
+	background-color: rgba(128, 128, 128, 0);
+}

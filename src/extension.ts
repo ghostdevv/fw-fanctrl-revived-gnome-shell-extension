@@ -1,8 +1,10 @@
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import { exec, titleCase } from './utils';
 import GObject from 'gi://GObject';
+import Clutter from 'gi://Clutter';
 import type Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
+import St from 'gi://St';
 import {
 	PopupMenuSection,
 	PopupMenuItem,
@@ -41,11 +43,31 @@ const QuickSettingsMenu = GObject.registerClass(
 				await this._extension?._checkActive();
 			});
 
+			// Setting button code based on GPL 3 Licensed Code from:
+			// https://github.com/maniacx/Battery-Health-Charging/blob/522f698c9f70027da017bccbedbc15d0b61a2a25/lib/thresholdPanel.js#L45-L56
+			const settingsButton = new St.Button({
+				style_class: 'fw-fctrl-preferences-button',
+				y_align: Clutter.ActorAlign.CENTER,
+				x_align: Clutter.ActorAlign.END,
+				x_expand: true,
+				child: new St.Icon({
+					icon_name: 'preferences-system-symbolic',
+					icon_size: 14,
+				}),
+			});
+
+			this.menu.addHeaderSuffix(settingsButton);
+			settingsButton.connect('clicked', () => {
+				this._extension?.openPreferences();
+			});
+
 			this.connect('destroy', () => {
 				this._section?.destroy();
 				this._section = null;
 
 				this._extension = null;
+
+				settingsButton.destroy();
 
 				for (const item of this._items.values()) {
 					item.destroy();

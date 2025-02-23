@@ -30,6 +30,11 @@ export default defineConfig({
 			{ recursive: true },
 		);
 
+		await cp(
+			join(import.meta.dirname, './src/stylesheet.css'),
+			join(BUILD_PATH, './stylesheet.css'),
+		);
+
 		await exec('glib-compile-schemas', [join(BUILD_PATH, './schemas')]);
 
 		const HOME = env.HOME;
