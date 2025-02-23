@@ -1,10 +1,5 @@
 # Framework Fan Control Gnome Extension
 
-<div height="100px">
-<!-- Badge by Andy Holmes https://github.com/andyholmes/gnome-shell-extensions-badge -->
-[![get it on gnome extension store](./.github/gnome-extensions.svg)](https://extensions.gnome.org/extension/7864/framework-fan-control/)
-</div>
-
 A gnome extension that wraps
 [fw-fanctrl](https://github.com/TamtamHero/fw-fanctrl) to provide an easy way to
 set your fan profile. Inspired by
@@ -13,6 +8,9 @@ set your fan profile. Inspired by
 ![screenshot of the extension with it's dropdown in quick settings showing the fan profile names](./.github/example.png)
 
 ## Installation
+
+<!-- Badge by Andy Holmes https://github.com/andyholmes/gnome-shell-extensions-badge -->
+[<img src="./.github/gnome-extensions.svg" height="92px" alt="get it on gnome extension store" />](https://extensions.gnome.org/extension/7864/framework-fan-control/)
 
 1. Make sure you have the latest version of
 [fw-fanctrl](https://github.com/TamtamHero/fw-fanctrl) installed.
