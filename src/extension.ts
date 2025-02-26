@@ -19,6 +19,13 @@ import {
 	gettext as _,
 } from 'resource:///org/gnome/shell/extensions/extension.js';
 
+interface FanState {
+	strategy: string;
+	active: boolean;
+	speed: string;
+	temperature: string;
+}
+
 const QuickSettingsMenu = GObject.registerClass(
 	class QuickSettingsMenu extends QuickMenuToggle {
 		_section: PopupMenuSection | null = null;
@@ -39,7 +46,7 @@ const QuickSettingsMenu = GObject.registerClass(
 
 			this.connect('clicked', async () => {
 				await exec(['fw-fanctrl', this?.checked ? 'resume' : 'pause']);
-				await this._extension?._checkActive();
+				await this._extension?._sync();
 			});
 
 			// Setting button code based on GPL 3 Licensed Code from:
@@ -97,23 +104,31 @@ const QuickSettingsMenu = GObject.registerClass(
 
 				item.connect('activate', async () => {
 					await exec(['fw-fanctrl', 'use', strategy]);
-					await extension._checkStrategy();
+					await extension._sync();
 				});
 			}
 
 			this.menu.addMenuItem(this._section);
 		}
 
-		_setActiveStrategy(strategy: string) {
+		_setFanState(state: FanState) {
+			this.menu.setHeader(
+				'weather-tornado-symbolic',
+				_('Framework Fan Control'),
+				`Temperature: ${state.temperature}°C Fan Speed ${state.speed}%`,
+			);
+
+			this.subtitle = `${state.temperature}°C ${state.speed}%`;
+
+			this.set_checked(state.active);
+
 			for (const [itemStrategy, menuItem] of this._items.entries()) {
 				menuItem.setOrnament(
-					itemStrategy === strategy ? Ornament.CHECK : Ornament.NONE,
+					itemStrategy === state.strategy
+						? Ornament.CHECK
+						: Ornament.NONE,
 				);
 			}
-		}
-
-		_setFanCtrlActive(enabled: boolean) {
-			this.set_checked(enabled);
 		}
 	},
 );
@@ -179,48 +194,20 @@ export default class FwFanCtrl extends Extension {
 			await this._menu._setup(this);
 		}
 
-		await this._checkActive();
-		await this._checkStrategy();
-	}
-
-	async _checkStrategy() {
 		try {
 			const result = await exec([
 				'fw-fanctrl',
 				'--output-format=JSON',
 				'print',
-				'current',
+				'all',
 			]);
 
-			const { strategy }: { strategy: string } = JSON.parse(result);
+			const state: FanState = JSON.parse(result);
 
-			this._menu?._setActiveStrategy(strategy);
+			this._menu?._setFanState(state);
+			this._indicator!.visible = state.active;
 		} catch (error) {
-			console.error(
-				'[fw-fanctrl-revived] Error checking strategy:',
-				error,
-			);
-		}
-	}
-
-	async _checkActive() {
-		try {
-			const result = await exec([
-				'fw-fanctrl',
-				'--output-format=JSON',
-				'print',
-				'active',
-			]);
-
-			const { active }: { active: boolean } = JSON.parse(result);
-
-			this._indicator!.visible = active;
-			this._menu?._setFanCtrlActive(active);
-		} catch (error) {
-			console.error(
-				'[fw-fanctrl-revived] Error checking active status:',
-				error,
-			);
+			console.error('[fw-fanctrl-revived] Error checking state', error);
 		}
 	}
 }
