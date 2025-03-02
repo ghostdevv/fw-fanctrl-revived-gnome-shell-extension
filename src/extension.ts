@@ -57,7 +57,7 @@ const QuickSettingsMenu = GObject.registerClass(
 				x_align: Clutter.ActorAlign.END,
 				x_expand: true,
 				child: new St.Icon({
-					icon_name: 'preferences-system-symbolic',
+					icon_name: 'applications-system-symbolic',
 					icon_size: 14,
 				}),
 			});
