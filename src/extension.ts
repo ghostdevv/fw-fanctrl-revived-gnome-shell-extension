@@ -17,6 +17,7 @@ import {
 import {
 	Extension,
 	gettext as _,
+	type ExtensionMetadata,
 } from 'resource:///org/gnome/shell/extensions/extension.js';
 
 interface FanState {
@@ -139,6 +140,15 @@ export default class FwFanCtrl extends Extension {
 	private _sourceId: number | null = null;
 	private _settings: Gio.Settings | null = null;
 
+	private logger: typeof console;
+
+	constructor(metadata: ExtensionMetadata) {
+		super(metadata);
+
+		// @ts-expect-error Types package needs updating, but this is right
+		this.logger = this.getLogger();
+	}
+
 	enable() {
 		this._settings = this.getSettings();
 
@@ -207,7 +217,10 @@ export default class FwFanCtrl extends Extension {
 			this._menu?._setFanState(state);
 			this._indicator!.visible = state.active;
 		} catch (error) {
-			console.error('[fw-fanctrl-revived] Error checking state', error);
+			this.logger.error(
+				'[fw-fanctrl-revived] Error checking state',
+				error,
+			);
 		}
 	}
 }
