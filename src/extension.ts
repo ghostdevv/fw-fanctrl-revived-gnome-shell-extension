@@ -139,7 +139,6 @@ export default class FwFanCtrl extends Extension {
 	private _menu: InstanceType<typeof QuickSettingsMenu> | null = null;
 	private _sourceId: number | null = null;
 	private _settings: Gio.Settings | null = null;
-
 	private logger: typeof console;
 
 	constructor(metadata: ExtensionMetadata) {
