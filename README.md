@@ -2,7 +2,7 @@
 
 A Gnome extension that provides a convenient way to control your framework laptop fan profile when using [fw-fanctrl](https://github.com/TamtamHero/fw-fanctrl).
 
-![screenshot of the extension with it's dropdown in quick settings showing the fan profile names](./.github/example.png)
+<img src="./.github/example.png" width="320px" alt="screenshot of the extension with it's dropdown in quick settings showing the fan profile names, as well as temperature and relative fan speed stats" />
 
 ## Installation
 
