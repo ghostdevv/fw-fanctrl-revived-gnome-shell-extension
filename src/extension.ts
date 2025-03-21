@@ -50,8 +50,8 @@ const QuickSettingsMenu = GObject.registerClass(
 				const { error } = await exec(['fw-fanctrl', newState]);
 
 				if (error) {
-					return console.error(
-						`[fw-fanctrl-revived] Error switching to ${newState}d state`,
+					return this._extension?.logger.error(
+						`Error switching to ${newState}d state`,
 						error,
 					);
 				}
@@ -104,8 +104,8 @@ const QuickSettingsMenu = GObject.registerClass(
 			]);
 
 			if (error) {
-				return console.error(
-					'[fw-fanctrl-revived] Error fetching fan control strategies',
+				return this._extension.logger.error(
+					'Error fetching fan control strategies',
 					error,
 				);
 			}
@@ -127,8 +127,8 @@ const QuickSettingsMenu = GObject.registerClass(
 					]);
 
 					if (error) {
-						return console.error(
-							`[fw-fanctrl-revived] Error switching to ${strategy} strategy`,
+						return this._extension?.logger.error(
+							`Error switching to ${strategy} strategy`,
 							error,
 						);
 					}
@@ -172,18 +172,24 @@ const QuickSettingsMenu = GObject.registerClass(
 	},
 );
 
+type Logger = typeof console;
+
 export default class FwFanCtrl extends Extension {
 	private _indicator: InstanceType<typeof SystemIndicator> | null = null;
 	private _menu: InstanceType<typeof QuickSettingsMenu> | null = null;
 	private _sourceId: number | null = null;
 	private _settings: Gio.Settings | null = null;
-	private logger: typeof console;
+	public readonly logger: Logger;
 
 	constructor(metadata: ExtensionMetadata) {
 		super(metadata);
 
-		// @ts-expect-error Types package needs updating, but this is right
-		this.logger = this.getLogger();
+		if ('getLogger' in this) {
+			// @ts-expect-error Types package needs updating, but this is right
+			this.logger = this.getLogger();
+		} else {
+			this.logger = console;
+		}
 	}
 
 	enable() {
@@ -249,10 +255,7 @@ export default class FwFanCtrl extends Extension {
 		]);
 
 		if (error) {
-			return this.logger.error(
-				'[fw-fanctrl-revived] Error checking state',
-				error,
-			);
+			return this.logger.error('Error checking state', error);
 		}
 
 		const state: FanState = JSON.parse(output);
