@@ -2,17 +2,20 @@ import Gio from 'gi://Gio';
 
 type Result = { error: null; output: string } | { error: Error; output: null };
 
+function toError(thing: unknown) {
+	return thing instanceof Error ? thing : new Error(`${thing}`);
+}
+
 /**
  * @see https://gjs.guide/guides/gio/subprocesses.html
  * @see https://stackoverflow.com/a/61150669
  */
-export function exec(
+export async function exec(
 	argv: string[],
 	input: string | null = null,
 	cancellable: Gio.Cancellable | null = null,
-) {
+): Promise<Result> {
 	let flags = Gio.SubprocessFlags.STDOUT_PIPE;
-
 	if (input !== null) flags |= Gio.SubprocessFlags.STDIN_PIPE;
 
 	const proc = new Gio.Subprocess({
@@ -20,9 +23,13 @@ export function exec(
 		flags: flags,
 	});
 
-	proc.init(cancellable);
+	try {
+		proc.init(cancellable);
+	} catch (error) {
+		return { error: toError(error), output: null };
+	}
 
-	return new Promise<Result>((resolve) => {
+	return await new Promise((resolve) => {
 		proc.communicate_utf8_async(input, cancellable, (proc, res) => {
 			try {
 				const output = proc!.communicate_utf8_finish(res)[1];
@@ -41,7 +48,7 @@ export function exec(
 			} catch (e) {
 				resolve({
 					output: null,
-					error: e instanceof Error ? e : new Error(`${e}`),
+					error: toError(e),
 				});
 			}
 		});
