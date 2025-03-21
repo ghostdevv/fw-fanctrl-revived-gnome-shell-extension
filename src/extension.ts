@@ -46,7 +46,16 @@ const QuickSettingsMenu = GObject.registerClass(
 			);
 
 			this.connect('clicked', async () => {
-				await exec(['fw-fanctrl', this?.checked ? 'resume' : 'pause']);
+				const newState = this.checked ? 'resume' : 'pause';
+				const { error } = await exec(['fw-fanctrl', newState]);
+
+				if (error) {
+					return console.error(
+						`[fw-fanctrl-revived] Error switching to ${newState}d state`,
+						error,
+					);
+				}
+
 				await this._extension?._sync();
 			});
 
@@ -87,14 +96,21 @@ const QuickSettingsMenu = GObject.registerClass(
 		async _setup(extension: FwFanCtrl) {
 			this._extension = extension;
 
-			const result = await exec([
+			const { error, output } = await exec([
 				'fw-fanctrl',
 				'--output-format=JSON',
 				'print',
 				'list',
 			]);
 
-			const { strategies }: { strategies: string[] } = JSON.parse(result);
+			if (error) {
+				return console.error(
+					'[fw-fanctrl-revived] Error fetching fan control strategies',
+					error,
+				);
+			}
+
+			const { strategies }: { strategies: string[] } = JSON.parse(output);
 
 			this._section = new PopupMenuSection();
 
@@ -104,12 +120,34 @@ const QuickSettingsMenu = GObject.registerClass(
 				this._items?.set(strategy, item);
 
 				item.connect('activate', async () => {
-					await exec(['fw-fanctrl', 'use', strategy]);
+					const { error } = await exec([
+						'fw-fanctrl',
+						'use',
+						strategy,
+					]);
+
+					if (error) {
+						return console.error(
+							`[fw-fanctrl-revived] Error switching to ${strategy} strategy`,
+							error,
+						);
+					}
+
 					await extension._sync();
 				});
 			}
 
 			this.menu.addMenuItem(this._section);
+		}
+
+		_setFailed() {
+			this.menu.setHeader(
+				'weather-tornado-symbolic',
+				_('Framework Fan Control'),
+				'fw-fanctrl failed, please check logs',
+			);
+
+			this.subtitle = 'fw-fanctrl failed';
 		}
 
 		_setFanState(state: FanState) {
@@ -203,23 +241,23 @@ export default class FwFanCtrl extends Extension {
 			await this._menu._setup(this);
 		}
 
-		try {
-			const result = await exec([
-				'fw-fanctrl',
-				'--output-format=JSON',
-				'print',
-				'all',
-			]);
+		const { error, output } = await exec([
+			'fw-fanctrl',
+			'--output-format=JSON',
+			'print',
+			'all',
+		]);
 
-			const state: FanState = JSON.parse(result);
-
-			this._menu?._setFanState(state);
-			this._indicator!.visible = state.active;
-		} catch (error) {
-			this.logger.error(
+		if (error) {
+			return this.logger.error(
 				'[fw-fanctrl-revived] Error checking state',
 				error,
 			);
 		}
+
+		const state: FanState = JSON.parse(output);
+
+		this._menu?._setFanState(state);
+		this._indicator!.visible = state.active;
 	}
 }
