@@ -255,6 +255,7 @@ export default class FwFanCtrl extends Extension {
 		]);
 
 		if (error) {
+			this._menu?._setFailed();
 			return this.logger.error('Error checking state', error);
 		}
 
