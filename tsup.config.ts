@@ -31,6 +31,12 @@ export default defineConfig({
 		);
 
 		await cp(
+			join(import.meta.dirname, './src/icons'),
+			join(BUILD_PATH, './icons'),
+			{ recursive: true },
+		);
+
+		await cp(
 			join(import.meta.dirname, './src/stylesheet.css'),
 			join(BUILD_PATH, './stylesheet.css'),
 		);

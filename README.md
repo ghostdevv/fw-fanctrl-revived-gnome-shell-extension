@@ -21,3 +21,11 @@ This extension is spiritual successor to, and inspired by,
 as the author was unfortunately unavailable. The differences we currently have
 is supporting Gnome 47+, and the control is in quick settings rather than the
 top bar for now.
+
+## Attribution/Notices
+
+- This extension is not affiliated with, endorsed by, or sponsored by Framework Computer Inc. All trademarks and brand names belong to their respective owners.
+- Fan icon used in the [extension logo](./src/icons/fw-fanctrl-revived.svg) is [from Icons8](https://github.com/icons8/WPF-UI-Framework)
+- Inspired by [joax/fw-fanctrl-gnome-shell-extension](https://github.com/joax/fw-fanctrl-gnome-shell-extension)
+- Powered by [TamtamHero/fw-fanctrl](https://github.com/TamtamHero/fw-fanctrl)
+- Other attribution can be found in comments throughout the codebase

@@ -2,8 +2,8 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import { exec, titleCase } from './utils';
 import GObject from 'gi://GObject';
 import Clutter from 'gi://Clutter';
-import type Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
+import Gio from 'gi://Gio';
 import St from 'gi://St';
 import {
 	PopupMenuSection,
@@ -31,17 +31,20 @@ const QuickSettingsMenu = GObject.registerClass(
 	class QuickSettingsMenu extends QuickMenuToggle {
 		_section: PopupMenuSection | null = null;
 		_items = new Map<string, PopupMenuItem>();
-		_extension: FwFanCtrl | null = null;
 
-		_init() {
-			super._init({
+		constructor(readonly _extension: FwFanCtrl) {
+			super({
 				title: _('Fan Control'),
-				iconName: 'weather-tornado-symbolic',
 				toggleMode: true,
+				gicon: Gio.icon_new_for_string(
+					`${_extension.path}/icons/fw-fanctrl-revived.svg`,
+				),
 			});
 
 			this.menu.setHeader(
-				'weather-tornado-symbolic',
+				Gio.icon_new_for_string(
+					`${_extension.path}/icons/fw-fanctrl-revived.svg`,
+				),
 				_('Framework Fan Control'),
 			);
 
@@ -81,8 +84,6 @@ const QuickSettingsMenu = GObject.registerClass(
 				this._section?.destroy();
 				this._section = null;
 
-				this._extension = null;
-
 				settingsButton.destroy();
 
 				for (const item of this._items.values()) {
@@ -94,8 +95,6 @@ const QuickSettingsMenu = GObject.registerClass(
 		}
 
 		async _setup(extension: FwFanCtrl) {
-			this._extension = extension;
-
 			const { error, output } = await exec([
 				'fw-fanctrl',
 				'--output-format=JSON',
@@ -140,23 +139,23 @@ const QuickSettingsMenu = GObject.registerClass(
 			this.menu.addMenuItem(this._section);
 		}
 
-		_setFailed() {
-			this.menu.setHeader(
-				'weather-tornado-symbolic',
-				_('Framework Fan Control'),
-				'fw-fanctrl failed, please check logs',
-			);
+		_setHeaderSubtitle(text: string) {
+			// @ts-expect-error using a private class property
+			this.menu._headerSubtitle.set({
+				visible: true,
+				text,
+			});
+		}
 
+		_setFailed() {
+			this._setHeaderSubtitle('fw-fanctrl failed, please check logs');
 			this.subtitle = 'fw-fanctrl failed';
 		}
 
 		_setFanState(state: FanState) {
-			this.menu.setHeader(
-				'weather-tornado-symbolic',
-				_('Framework Fan Control'),
+			this._setHeaderSubtitle(
 				`Temperature: ${state.temperature}°C Fan Speed ${state.speed}%`,
 			);
-
 			this.subtitle = `${state.temperature}°C ${state.speed}%`;
 
 			this.set_checked(state.active);
@@ -195,7 +194,7 @@ export default class FwFanCtrl extends Extension {
 	enable() {
 		this._settings = this.getSettings();
 
-		this._menu = new QuickSettingsMenu();
+		this._menu = new QuickSettingsMenu(this);
 		this._indicator = new SystemIndicator();
 		this._indicator.quickSettingsItems.push(this._menu);
 
