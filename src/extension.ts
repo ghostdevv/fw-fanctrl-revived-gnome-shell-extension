@@ -83,13 +83,7 @@ const QuickSettingsMenu = GObject.registerClass(
 			this.connect('destroy', () => {
 				this._section?.destroy();
 				this._section = null;
-
 				settingsButton.destroy();
-
-				for (const item of this._items.values()) {
-					item.destroy();
-				}
-
 				this._items.clear();
 			});
 		}
