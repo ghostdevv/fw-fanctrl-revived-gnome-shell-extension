@@ -255,6 +255,5 @@ export default class FwFanCtrl extends Extension {
 		const state: FanState = JSON.parse(output);
 
 		this._menu?._setFanState(state);
-		this._indicator!.visible = state.active;
 	}
 }
