@@ -5,7 +5,7 @@
 	"main": "src/index.ts",
 	"scripts": {
 		"build": "tsup-node",
-		"check": "prettier --check . && biome check .",
+		"check": "prettier --check . && biome check . && tsc --noEmit",
 		"fix": "prettier --write . && biome check --write ."
 	},
 	"devDependencies": {

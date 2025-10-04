@@ -7,8 +7,9 @@
 		"verbatimModuleSyntax": true,
 		"allowJs": true,
 		"checkJs": true,
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"skipLibCheck": true
 	},
 	"include": ["src/**.ts", "src/**.js"],
-	"exclude": ["node_modules/**"]
+	"exclude": ["node_modules/**", "dist/**"]
 }
