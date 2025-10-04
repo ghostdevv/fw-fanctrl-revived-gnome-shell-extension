@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.2.5/schema.json",
 	"vcs": {
 		"enabled": true,
 		"clientKind": "git",
@@ -7,14 +7,12 @@
 	},
 	"files": {
 		"ignoreUnknown": true,
-		"ignore": []
+		"includes": ["**"]
 	},
 	"formatter": {
 		"enabled": false
 	},
-	"organizeImports": {
-		"enabled": false
-	},
+	"assist": { "actions": { "source": { "organizeImports": "off" } } },
 	"linter": {
 		"enabled": true,
 		"rules": {
@@ -23,10 +21,23 @@
 				"noUnusedImports": "error"
 			},
 			"style": {
-				"noNonNullAssertion": "off"
+				"noNonNullAssertion": "off",
+				"noParameterAssign": "error",
+				"useAsConstAssertion": "error",
+				"useDefaultParameterLast": "error",
+				"useEnumInitializers": "error",
+				"useSelfClosingElements": "error",
+				"useSingleVarDeclarator": "error",
+				"noUnusedTemplateLiteral": "error",
+				"useNumberNamespace": "error",
+				"noInferrableTypes": "error",
+				"noUselessElse": "error"
 			},
 			"suspicious": {
 				"noDoubleEquals": "off"
+			},
+			"complexity": {
+				"noForEach": "error"
 			}
 		}
 	}

@@ -9,15 +9,14 @@
 		"fix": "prettier --write . && biome check --write ."
 	},
 	"devDependencies": {
-		"@biomejs/biome": "1.9.4",
-		"@girs/adw-1": "1.7.0-4.0.0-beta.21",
-		"@girs/gjs": "4.0.0-beta.21",
-		"@girs/gnome-shell": "^47.0.2",
-		"@types/node": "^22.13.4",
-		"prettier": "^3.5.1",
+		"@biomejs/biome": "2.2.5",
+		"@girs/gjs": "4.0.0-beta.38",
+		"@girs/gnome-shell": "^49.0.1",
+		"@types/node": "^22.18.8",
+		"prettier": "^3.6.2",
 		"tinyexec": "^0.3.2",
-		"tsup": "^8.3.6",
-		"typescript": "^5.7.3"
+		"tsup": "^8.5.0",
+		"typescript": "^5.9.3"
 	},
 	"packageManager": "pnpm@10.12.1",
 	"pnpm": {
