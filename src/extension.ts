@@ -134,7 +134,6 @@ const QuickSettingsMenu = GObject.registerClass(
 		}
 
 		_setHeaderSubtitle(text: string) {
-			// @ts-expect-error using a private class property
 			this.menu._headerSubtitle.set({
 				visible: true,
 				text,
@@ -181,6 +180,7 @@ export default class FwFanCtrl extends Extension {
 			// @ts-expect-error Types package needs updating, but this is right
 			this.logger = this.getLogger();
 		} else {
+			// @ts-expect-error who knows
 			this.logger = console;
 		}
 	}
@@ -193,13 +193,17 @@ export default class FwFanCtrl extends Extension {
 		this._indicator.quickSettingsItems.push(this._menu);
 
 		Main.panel.statusArea.quickSettings.addExternalIndicator(
+			// @ts-expect-error who knows
 			this._indicator,
 		);
 
 		this._createLoop(this._settings.get_int('refresh-interval'));
-		this._settings.connect('changed::refresh-interval', (settings, key) => {
-			this._createLoop(settings.get_int('refresh-interval'));
-		});
+		this._settings.connect(
+			'changed::refresh-interval',
+			(settings, _key) => {
+				this._createLoop(settings.get_int('refresh-interval'));
+			},
+		);
 
 		this._sync();
 	}
