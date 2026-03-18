@@ -9,16 +9,16 @@
 		"fix": "prettier --write . && biome check --write ."
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.2.5",
-		"@girs/gjs": "4.0.0-beta.38",
-		"@girs/gnome-shell": "^49.0.1",
-		"@types/node": "^22.18.8",
-		"prettier": "^3.6.2",
-		"tinyexec": "^0.3.2",
-		"tsup": "^8.5.0",
+		"@biomejs/biome": "2.4.8",
+		"@girs/gjs": "4.0.0-beta.40",
+		"@girs/gnome-shell": "^49.1.0",
+		"@types/node": "^25.5.0",
+		"prettier": "^3.8.1",
+		"tinyexec": "^1.0.4",
+		"tsup": "^8.5.1",
 		"typescript": "^5.9.3"
 	},
-	"packageManager": "pnpm@10.12.1",
+	"packageManager": "pnpm@10.32.1",
 	"pnpm": {
 		"onlyBuiltDependencies": [
 			"@biomejs/biome",

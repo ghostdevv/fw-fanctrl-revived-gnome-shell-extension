@@ -17,7 +17,6 @@ import {
 import {
 	Extension,
 	gettext as _,
-	type ExtensionMetadata,
 } from 'resource:///org/gnome/shell/extensions/extension.js';
 
 interface FanState {
@@ -173,7 +172,7 @@ export default class FwFanCtrl extends Extension {
 	private _settings: Gio.Settings | null = null;
 	public readonly logger: Logger;
 
-	constructor(metadata: ExtensionMetadata) {
+	constructor(metadata: InstanceType<typeof Extension>['metadata']) {
 		super(metadata);
 
 		if ('getLogger' in this) {
