@@ -2,7 +2,6 @@
 	"name": "fw-fanctrl-revived-gnome-shell-extension",
 	"private": true,
 	"type": "module",
-	"main": "src/index.ts",
 	"scripts": {
 		"build": "tsup-node",
 		"check": "prettier --check . && biome check . && tsc --noEmit",
