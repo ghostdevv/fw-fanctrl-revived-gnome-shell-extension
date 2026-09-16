@@ -8,7 +8,8 @@
 		"allowJs": true,
 		"checkJs": true,
 		"resolveJsonModule": true,
-		"skipLibCheck": true
+		"skipLibCheck": true,
+		"types": ["node", "@girs/gjs", "@girs/gnome-shell"]
 	},
 	"include": ["src/**.ts", "src/**.js"],
 	"exclude": ["node_modules/**", "dist/**"]
